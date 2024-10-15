@@ -18,14 +18,17 @@ class EpanechnikovKDE:
         u = (x - xi) / self.bandwidth
         norm_u = np.linalg.norm(u)
         if norm_u <= 1:
-            return 3 / 4 * (1 - norm_u ** 2)
+            return (2 / np.pi) *  (1 - norm_u ** 2)
         return 0
         # TODO
 
     def evaluate(self, x):
         """Evaluate the KDE at point x."""
-        n = len(self.data)
-        return np.sum([self.epanechnikov_kernel(x, xi) for xi in self.data]) / (n * self.bandwidth)
+        u = (x - self.data) / self.bandwidth
+        norm_u = np.linalg.norm(u, axis=1)
+        mask = norm_u <= 1
+        kernel_values = (2 / np.pi) * (1 - norm_u[mask] ** 2)
+        return np.sum(kernel_values) / (len(self.data) * self.bandwidth ** 2)
         # TODO
 
 
